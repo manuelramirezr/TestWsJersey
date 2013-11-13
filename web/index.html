@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+                <title>jQuery Mobile page</title>
+                <meta charset="utf-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+		<script type="text/javascript" src="js/jquery-1.10.2.min.js"></script> 
+                <script type="text/javascript" src="js/jquery.mobile-1.3.2.min.js"></script>
+                <link rel="stylesheet" href="css/jquery.mobile-1.3.2.min.css" />
+                <link rel="stylesheet" href="css/themes/koghi.min.css" />
+                <script>
+                    $(document).ready(function(){
+                        $.mobile.pageLoadErrorMessage = 'Esta pagina no esxiste, el mensaje de error ha sido cambiado';
+//                        $.mobile.fixedToolbars.show(true);
+                        $.mobile.defaultDialogTransition='slideup';
+                        $.mobile.defaultPageTransition='flip';
+                        $("#mostrar").click(function(e){
+                            $.mobile.loadingMessage = "Hemos modificado el mensaje del Loading";
+                        $.mobile.showPageLoadingMsg('');
+                        });
+
+                        $("#ocultar").click(function(e){
+                            $.mobile.hidePageLoadingMsg();
+                        });
+                    });
+                    $("#loading").dialog({
+                        hide: 'slide',
+                        show: 'slide',
+                        autoOpen: false
+                    });
+                    function enviar(){ 
+
+                            $("#formAmbiente").submit(function (){
+                                $.ajax({
+                                    url:"./webresources/com.koghi.documentacion.modelo.ambiente",
+                                    type: 'post',
+                                    data : JSON.stringify({"id":"", "descripcionAmbiente":$('#descripcionAmbiente').val()}),
+        
+                                    contentType: "application/json",
+                                    async : false,
+
+                                    processData:false,
+                                    dataType: 'json',
+                                    success:function(r){
+                                        console.log(r);
+                                        console.log($("#formAmbiente"));
+                                        if(r.descripcionAmbiente!=null && r.descripcionAmbiente.length>0){
+                                            $('#msgSistema').dialog({
+                                                          modal:true,
+
+                                                         open: function(){
+                                                             $(this).add("Se ha guradado exitosamente el ambiente " + r.descripcionAmbiente)
+                                                         },
+
+
+                                                          complete: function(){
+                                          //close the dialog when fished
+                                                              $(this).dialog('close');
+                                                              $('#formAmbiente').each(function(){
+                                                                    this.reset();
+                                                              });
+                                                          },
+                                             }); 
+
+                                            $("#msgSistema").ajaxStart(function(){
+                                                $(this).show();                                              
+                                            }).ajaxStop(function(){
+                                                $(this.hide);
+                                            })
+
+                                        }
+                                        else{
+                                          $('#msgSistema').dialog({
+                                                          modal:true,
+
+                                                         open: function(){
+                                                             $(this).add("No se pudo guardar el ambiente");
+                                                         },
+                                                         complete: function(){
+                                          //close the dialog when fished
+                                                              $(this).dialog('close');
+                                                          }
+                                             }); 
+                                        }
+                                          
+                                    }
+
+                                });
+                            })
+                            
+                        
+                    }
+                </script>
+        </head>
+<body>
+    
+        <div data-role="page" id="home">
+            <div data-role="header" data-position="fixed">
+                <h1>Men&uacute; de Opciones</h1>
+            </div>
+            <div data-role="content">
+            <a href="#ambientes" data-role="button" >Ambientes</a>
+            <a href="#" id="mostrar" data-role="button">Mostrar Loading</a>
+            <a href="#" id="ocultar" data-role="button">Ocultar Loading</a>
+            <a href="#dialogo" data-role="button" data-rel="dialog">Probar nueva transicion de Dialogos</a>
+            <a href="demo.html" data-role="button" >Aqui hay un error, la pagina del vinculo no existe</a> 
+
+            </div>
+            <div data-role="footer">
+            <h3>KOGHI S.A.S</h3>
+            </div>
+
+        </div>
+
+        <div data-role="page" id="ambientes">
+            <div data-role="header" data-position="fixed">
+            <h1>Ingreso de Ambientes</h1>
+            </div>
+            <div data-role="content">
+                <p>Aqu&iacute; puede crear los ambientes que se encuentran en la plataforma y ver el listados de los actuales para realizar alguna actualizaci&oacute;n.</p>
+                <form id="formAmbiente">
+                    <label>Descripci&oacute;n del Ambiente:</label>
+                    <input type="text" class="required" required="required" title="Descripci&oacute;n del ambiente" placeholder="Escriba el nombre del Ambiente" id="descripcionAmbiente" value="" name="descripcionAmbiente" />
+                    <button onclick="enviar()">Enviar</button>
+                </form>
+            <a href="#home" data-role="button" data-icon="back">Regresar</a> 
+
+            </div>
+            <div data-role="footer">
+            <h3>KOGHI S.A.S</h3>
+            </div>
+        </div>
+
+        <div data-role="page" id="dialogo">
+            <div data-role="header" data-position="fixed">
+            <h1>Configuraciones</h1>
+            </div>
+            <div data-role="content">
+            <p>Este es un dialog y puedes ver que hace la transicion slideup, sin poner el data-transition en el anlace, todos los dialogos tendran la misma transicion</p>
+            <a href="#home" data-role="button" data-icon="back">Regrsar</a> 
+            </div>
+        </div>
+        
+    
+    
+    
+        <!--<div id="msgSistema" data-role="page" data-transition="flip">
+            <div data-role="header" data-position="fixed">
+            <h1>Mensage del Sistema</h1>
+            </div>
+            <div data-role="content" id="contentMessg">            
+            </div>
+            <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
+            
+        </div>-->
+    
+</body>
+</html>
